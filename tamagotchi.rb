@@ -25,6 +25,16 @@ class Tamagotchi
 		@alive = false 
 	end
 
+	def eat
+		if @hunger < 4
+			@hunger = @hunger + 1 
+			puts "om nom nom \n\n"			
+		else 
+			puts "Tamagotchi is already full.\n\n"
+		end
+
+	end
+
 end
 
 t = Tamagotchi.new
@@ -43,6 +53,9 @@ until t.alive == false
 	elsif action == 'help'
 		puts "inspect, suicide, help... \n\n"
 	
+	elsif action == 'feed'
+		t.eat		
+
 	else
 		puts "Unknown action. Type 'help' for a complete list. \n\n"
 	end
