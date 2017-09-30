@@ -21,17 +21,33 @@ class Tamagotchi
 		puts "Alive: #{@alive} \n\n"
 	end
 
+	def suicide 
+		@alive = false 
+	end
+
 end
 
 t = Tamagotchi.new
 
 until t.alive == false 
-	print "Action? "
-	action = gets.chomp
+	print "<< Action? "
+	action = gets.chomp.downcase.gsub(/\s+/, "")
 	puts " "
 
-	if action.downcase == 'inspect'
+	if action == 'inspect'
 		t.inspect
+
+	elsif action == 'suicide'
+		t.suicide
+
+	elsif action == 'help'
+		puts "inspect, suicide, help... \n\n"
+	
+	else
+		puts "Unknown action. Type 'help' for a complete list. \n\n"
 	end
 
 end
+
+# when alive != true 
+puts "Tamagotchi, a #{t.age} year-old #{t.stage.downcase} weighing #{t.weight} oz, has died."
