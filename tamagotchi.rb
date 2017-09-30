@@ -28,6 +28,7 @@ class Tamagotchi
 	def eat
 		if @hunger < 4
 			@hunger = @hunger + 1 
+			@weight = @weight + rand(2..4)
 			puts "om nom nom \n\n"			
 		else 
 			puts "Tamagotchi is already full.\n\n"
@@ -35,11 +36,20 @@ class Tamagotchi
 
 	end
 
+	def health_check
+		if @hunger == 0 && @joy == 0
+			@alive = false
+		end
+	end
+
+
 end
 
 t = Tamagotchi.new
 
 until t.alive == false 
+t.health_check
+
 	print "<< Action? "
 	action = gets.chomp.downcase.gsub(/\s+/, "")
 	puts " "
@@ -54,7 +64,7 @@ until t.alive == false
 		puts "inspect, suicide, help... \n\n"
 	
 	elsif action == 'feed'
-		t.eat		
+		t.eat	
 
 	else
 		puts "Unknown action. Type 'help' for a complete list. \n\n"
