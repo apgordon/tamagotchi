@@ -6,14 +6,17 @@ class Tamagotchi
 	attr_accessor :stage, :age, :weight, :hunger, :joy, :alive 
 
 	def initialize
-		@stage = @@stages[0]
 		@dob = Time.now 
-		@age = 0
 		@weight = rand(2..5)
 		@hunger = 1
 		@joy = 1
 		@alive = true 
 	end
+
+	def calculate_age
+		@age = ((Time.now - @dob)/15).floor
+	end
+
 
 	def inspect
 		puts "DOB: #{@dob}"
@@ -39,18 +42,22 @@ class Tamagotchi
 		end
 	end
 
-	def health_check
+	def alive_check
 		if @hunger == 0 && @joy == 0
 			@alive = false
 		end
 	end
 
-	def stage_check
-		if Time.now > @dob + 18
+	def calculate_stage
+		if @age < 2
+			@stage = @@stages[0]
+		elsif @age.between?(2, 13) 
 			@stage = @@stages[1]
-		end
-
-		# add in upgrades to the other stages given times 
+		elsif @age.between?(13,18) 
+			@stage = @@stages[2]
+		elsif @age > 18 
+			@stage = @@stages[3]
+		end	
 	end
 
 end
@@ -58,20 +65,21 @@ end
 t = Tamagotchi.new
 
 until t.alive == false 
-t.health_check
-t.stage_check
+t.alive_check
+t.calculate_age
+t.calculate_stage
 action = ""
 
 	begin
 			print "<< Action? "
-		  action = Timeout::timeout(6) do
+		  action = Timeout::timeout(15) do
 		  	gets.chomp.downcase.gsub(/\s+/, "")
 	  	end
 		rescue Timeout::Error
 	end
 
 	if action.empty?
-		puts 'Action is empty.'
+		puts "\n" 
 
 	elsif action == 'inspect'
 		t.inspect
