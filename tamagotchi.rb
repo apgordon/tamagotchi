@@ -7,6 +7,7 @@ class Tamagotchi
 
 	def initialize
 		@stage = @@stages[0]
+		@dob = Time.now 
 		@age = 0
 		@weight = rand(2..5)
 		@hunger = 1
@@ -15,6 +16,7 @@ class Tamagotchi
 	end
 
 	def inspect
+		puts "DOB: #{@dob}"
 		puts "Stage: #{@stage}"
 		puts "Age: #{@age} yr"
 		puts "Weight: #{@weight} oz"
@@ -43,22 +45,29 @@ class Tamagotchi
 		end
 	end
 
-end
+	def stage_check
+		if Time.now > @dob + 18
+			@stage = @@stages[1]
+		end
 
-$time = 0 
+		# add in upgrades to the other stages given times 
+	end
+
+end
 
 t = Tamagotchi.new
 
 until t.alive == false 
 t.health_check
+t.stage_check
+action = ""
 
 	begin
 			print "<< Action? "
-		  action = Timeout::timeout(4) do
+		  action = Timeout::timeout(6) do
 		  	gets.chomp.downcase.gsub(/\s+/, "")
 	  	end
 		rescue Timeout::Error
-			puts "Nothing entered in time."
 	end
 
 	if action.empty?
@@ -80,9 +89,6 @@ t.health_check
 		puts "Unknown action. Type 'help' for a complete list. \n\n"
 	end
 
-$time +=1
-puts $time
-action = ""
 end
 
 # when alive != true 
