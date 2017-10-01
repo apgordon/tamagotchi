@@ -9,20 +9,20 @@ class Tamagotchi
 		@dob = Time.now 
 		@weight = rand(2..5)
 		@hunger = 1
+		@last_ate = Time.now
 		@joy = 1
 		@alive = true 
 	end
 
-	def calculate_age
-		@age = ((Time.now - @dob)/15).floor
-	end
-
-
 	def inspect
-		puts "DOB: #{@dob}"
+		#puts "DOB: #{@dob}"
 		puts "Stage: #{@stage}"
 		puts "Age: #{@age} yr"
-		puts "Weight: #{@weight} oz"
+		if @weight >= 16
+			puts "Weight: #{(@weight/16).floor} lbs, #{@weight % 16} oz"
+		else
+			puts "Weight: #{@weight} oz"
+		end
 		puts "Hunger: #{@hunger}/4"
 		puts "Joy #{@joy}/4"
 		puts "Alive: #{@alive} \n\n"
@@ -34,16 +34,17 @@ class Tamagotchi
 
 	def eat
 		if @hunger < 4
-			@hunger = @hunger + 1 
-			@weight = @weight + rand(2..4)
-			puts "om nom nom \n\n"			
+			@hunger += 1 
+			@weight = @weight + rand(4..7)
+			puts "Om nom nom... \n\n"			
+			@last_ate = Time.now 
 		else 
 			puts "Tamagotchi is already full.\n\n"
 		end
 	end
 
 	def alive_check
-		if @hunger == 0 && @joy == 0
+		if @hunger < 1 || @joy < 1
 			@alive = false
 		end
 	end
@@ -60,12 +61,28 @@ class Tamagotchi
 		end	
 	end
 
+	def calculate_age
+		@age = ((Time.now - @dob)/15).floor
+	end
+
+	def calculate_hunger
+		if Time.now > @last_ate + 30
+			@hunger -= 1
+		end
+	end
+
+	def calculate_weight
+	end
+
+	def calculate_joy
+	end
+
 end
 
 t = Tamagotchi.new
 
 until t.alive == false 
-t.alive_check
+t.calculate_hunger
 t.calculate_age
 t.calculate_stage
 action = ""
@@ -97,6 +114,7 @@ action = ""
 		puts "Unknown action. Type 'help' for a complete list. \n\n"
 	end
 
+t.alive_check
 end
 
 # when alive != true 
