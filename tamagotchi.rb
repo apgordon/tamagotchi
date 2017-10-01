@@ -1,3 +1,5 @@
+require 'timeout'
+
 class Tamagotchi 
 
 	@@stages = ["Baby", "Child", "Teen", "Adult"]
@@ -33,7 +35,6 @@ class Tamagotchi
 		else 
 			puts "Tamagotchi is already full.\n\n"
 		end
-
 	end
 
 	def health_check
@@ -42,19 +43,28 @@ class Tamagotchi
 		end
 	end
 
-
 end
+
+$time = 0 
 
 t = Tamagotchi.new
 
 until t.alive == false 
 t.health_check
 
-	print "<< Action? "
-	action = gets.chomp.downcase.gsub(/\s+/, "")
-	puts " "
+	begin
+			print "<< Action? "
+		  action = Timeout::timeout(4) do
+		  	gets.chomp.downcase.gsub(/\s+/, "")
+	  	end
+		rescue Timeout::Error
+			puts "Nothing entered in time."
+	end
 
-	if action == 'inspect'
+	if action.empty?
+		puts 'Action is empty.'
+
+	elsif action == 'inspect'
 		t.inspect
 
 	elsif action == 'suicide'
@@ -70,6 +80,9 @@ t.health_check
 		puts "Unknown action. Type 'help' for a complete list. \n\n"
 	end
 
+$time +=1
+puts $time
+action = ""
 end
 
 # when alive != true 
