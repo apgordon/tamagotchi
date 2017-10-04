@@ -9,7 +9,8 @@ class Tamagotchi
 		@dob = Time.now 
 		@weight = rand(2..5)
 		@hunger = 1
-		@last_ate = Time.now
+		@hunger_reset_timer = Time.now
+		@joy_reset_timer = Time.now
 		@joy = 1
 		@alive = true 
 	end
@@ -24,8 +25,7 @@ class Tamagotchi
 			puts "Weight: #{@weight} oz"
 		end
 		puts "Hunger: #{@hunger}/4"
-		puts "Joy #{@joy}/4"
-		puts "Alive: #{@alive} \n\n"
+		puts "Joy #{@joy}/4 \n\n"
 	end
 
 	def suicide 
@@ -37,9 +37,19 @@ class Tamagotchi
 			@hunger += 1 
 			@weight = @weight + rand(4..7)
 			puts "Om nom nom... \n\n"			
-			@last_ate = Time.now 
+			@hunger_reset_timer = Time.now 
 		else 
 			puts "Tamagotchi is already full.\n\n"
+		end
+	end
+
+	def play
+		if @joy < 4
+			@joy += 1 
+			puts "Play play play... \n\n"			
+			@joy_reset_timer = Time.now 
+		else 
+			puts "Tamagotchi is already very happy.\n\n"
 		end
 	end
 
@@ -66,15 +76,22 @@ class Tamagotchi
 	end
 
 	def calculate_hunger
-		if Time.now > @last_ate + 30
+		if Time.now > @hunger_reset_timer + 30
 			@hunger -= 1
+			@hunger_reset_timer = Time.now
 		end
+		# self.calculate_weight ... weight should decrease sligthly if not for a long time
 	end
 
 	def calculate_weight
 	end
 
 	def calculate_joy
+		if Time.now > @joy_reset_timer + 30
+			@joy -= 1
+			@joy_reset_timer = Time.now
+		end
+		#weight should decrease sligthly if not for a long time
 	end
 
 end
@@ -83,8 +100,11 @@ t = Tamagotchi.new
 
 until t.alive == false 
 t.calculate_hunger
+t.calculate_joy
 t.calculate_age
 t.calculate_stage
+t.alive_check
+break if t.alive_check == false
 action = ""
 
 	begin
@@ -110,12 +130,15 @@ action = ""
 	elsif action == 'feed'
 		t.eat	
 
+	elsif action == 'play'
+		t.play
+
 	else
 		puts "Unknown action. Type 'help' for a complete list. \n\n"
 	end
 
-t.alive_check
 end
 
 # when alive != true 
-puts "Tamagotchi, a #{t.age} year-old #{t.stage.downcase} weighing #{t.weight} oz, has died."
+puts "------------\n\nTamagotchi has died! \n\n"
+t.inspect
