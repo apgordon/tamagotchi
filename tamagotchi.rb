@@ -13,6 +13,7 @@ class Tamagotchi
 		@joy_reset_timer = Time.now
 		@joy = 1
 		@alive = true 
+		# include height at some point 
 	end
 
 	def inspect
@@ -36,7 +37,7 @@ class Tamagotchi
 		if @hunger < 4
 			@hunger += 1 
 			@weight = @weight + rand(4..7)
-			puts "Om nom nom... \n\n"			
+			puts "Om nom nom... Hunger: +1\n\n"			
 			@hunger_reset_timer = Time.now 
 		else 
 			puts "Tamagotchi is already full.\n\n"
@@ -45,9 +46,27 @@ class Tamagotchi
 
 	def play
 		if @joy < 4
-			@joy += 1 
-			puts "Play play play... \n\n"			
-			@joy_reset_timer = Time.now 
+			n = 0
+			correct = 0 
+			until n == 5 
+				print "Even (e) or Odd (o)? "
+				guess = gets.chomp.downcase.gsub(/\s+/, "")
+				rand_num = rand(1..10)
+				rand_num_string = "Tamagotchi was thinking of the number #{rand_num}. \n\n"
+					if (rand_num.even? && guess == 'e')
+						puts "Correct! " + rand_num_string
+						correct = correct + 1
+					else
+						puts "Wrong!" + rand_num_string 
+					end
+				n += 1 
+			end
+			if correct >= 3
+				puts "Tamagotchi is pleased. Joy: +1. \n\n"
+				@joy += 1
+				@joy_reset_timer = Time.now 
+			end
+
 		else 
 			puts "Tamagotchi is already very happy.\n\n"
 		end
@@ -94,16 +113,20 @@ class Tamagotchi
 		#weight should decrease sligthly if not for a long time
 	end
 
+	def checks
+		calculate_hunger
+		calculate_joy
+		calculate_age
+		calculate_stage
+		alive_check
+	end
+
 end
 
 t = Tamagotchi.new
 
-until t.alive == false 
-t.calculate_hunger
-t.calculate_joy
-t.calculate_age
-t.calculate_stage
-t.alive_check
+loop do 
+t.checks
 break if t.alive_check == false
 action = ""
 
