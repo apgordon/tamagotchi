@@ -1,6 +1,6 @@
 require 'timeout'
 
-class Tamagotchi 
+class Tom 
 
 	@@stages = ["Baby", "Child", "Teen", "Adult"]
 	attr_accessor :stage, :age, :weight, :hunger, :joy, :alive 
@@ -40,7 +40,7 @@ class Tamagotchi
 			puts "Om nom nom... Hunger: +1\n\n"			
 			@hunger_reset_timer = Time.now 
 		else 
-			puts "Tamagotchi is already full.\n\n"
+			puts "Tom is already full.\n\n"
 		end
 	end
 
@@ -52,7 +52,7 @@ class Tamagotchi
 				print "Even (e) or Odd (o)? "
 				guess = gets.chomp.downcase.gsub(/\s+/, "")
 				rand_num = rand(1..10)
-				rand_num_string = "Tamagotchi was thinking of the number #{rand_num}. \n\n"
+				rand_num_string = "Tom was thinking of the number #{rand_num}. \n\n"
 					if (rand_num.even? && guess == 'e')
 						puts "Correct! " + rand_num_string
 						correct = correct + 1
@@ -62,20 +62,34 @@ class Tamagotchi
 				n += 1 
 			end
 			if correct >= 3
-				puts "Tamagotchi is pleased. Joy: +1. \n\n"
+				puts "Tom is pleased. Joy: +1. \n\n"
 				@joy += 1
 				@joy_reset_timer = Time.now 
 			end
 
 		else 
-			puts "Tamagotchi is already very happy.\n\n"
+			puts "Tom is already very happy.\n\n"
 		end
 	end
 
-	def alive_check
-		if @hunger < 1 || @joy < 1
-			@alive = false
+	def calculate_hunger
+		if Time.now > @hunger_reset_timer + 30
+			@hunger -= 1
+			@hunger_reset_timer = Time.now
 		end
+		# self.calculate_weight ... weight should decrease sligthly if not for a long time
+	end
+
+	def calculate_joy
+		if Time.now > @joy_reset_timer + 30
+			@joy -= 1
+			@joy_reset_timer = Time.now
+		end
+		#weight should decrease sligthly if not for a long time
+	end
+
+	def calculate_age
+		@age = ((Time.now - @dob)/15).floor
 	end
 
 	def calculate_stage
@@ -89,28 +103,8 @@ class Tamagotchi
 			@stage = @@stages[3]
 		end	
 	end
-
-	def calculate_age
-		@age = ((Time.now - @dob)/15).floor
-	end
-
-	def calculate_hunger
-		if Time.now > @hunger_reset_timer + 30
-			@hunger -= 1
-			@hunger_reset_timer = Time.now
-		end
-		# self.calculate_weight ... weight should decrease sligthly if not for a long time
-	end
-
+	
 	def calculate_weight
-	end
-
-	def calculate_joy
-		if Time.now > @joy_reset_timer + 30
-			@joy -= 1
-			@joy_reset_timer = Time.now
-		end
-		#weight should decrease sligthly if not for a long time
 	end
 
 	def checks
@@ -121,13 +115,19 @@ class Tamagotchi
 		alive_check
 	end
 
+	def alive_check
+		if @hunger < 1 || @joy < 1
+			@alive = false
+		end
+	end
+
 end
 
-t = Tamagotchi.new
+tom = Tom.new
 
 loop do 
-t.checks
-break if t.alive_check == false
+tom.checks
+break if tom.alive == false
 action = ""
 
 	begin
@@ -142,19 +142,19 @@ action = ""
 		puts "\n" 
 
 	elsif action == 'inspect'
-		t.inspect
+		tom.inspect
 
 	elsif action == 'suicide'
-		t.suicide
+		tom.suicide
 
 	elsif action == 'help'
 		puts "inspect, suicide, help... \n\n"
 	
 	elsif action == 'feed'
-		t.eat	
+		tom.eat	
 
 	elsif action == 'play'
-		t.play
+		tom.play
 
 	else
 		puts "Unknown action. Type 'help' for a complete list. \n\n"
@@ -163,5 +163,5 @@ action = ""
 end
 
 # when alive != true 
-puts "------------\n\nTamagotchi has died! \n\n"
-t.inspect
+puts "------------\n\nTom has died! \n\n"
+tom.inspect
